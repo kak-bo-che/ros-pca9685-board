@@ -1,15 +1,36 @@
 <launch>
   <rosparam>
+
     servos:
       pwm_frequency: 50
-      throttle:
-        channel: 0
-        center: 320
+      left_top_lid:
+        channel: 7
+        center: 302
+        direction: -1
+        range: 115
+      left_bottom_lid:
+        channel: 6
+        center: 335
+        direction: 1
+        range: 130
+      right_top_lid:
+        channel: 9
+        center: 380
         direction: 1
         range: 120
-      steering:
-        channel: 1
-        center: 325
+      right_bottom_lid:
+        channel: 8
+        center: 310
+        direction: -1
+        range: 140
+      look_z:
+        channel: 11
+        center: 335
+        direction: 1
+        range: 170
+      look_y:
+        channel: 10
+        center: 320
         direction: 1
         range: 160
   </rosparam>

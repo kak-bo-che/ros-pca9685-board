@@ -25,6 +25,7 @@ using namespace pca9685_board;
 PCA9685Node::PCA9685Node()
 {
     // Set up controller on the default i2c address
+    nh_ = ros::NodeHandle("~");
     int fd = board_controller_.setup();
     ROS_ASSERT_MSG(0 < fd, "Board setup error. File handle invalid (%d)", fd);
 
@@ -35,9 +36,13 @@ PCA9685Node::PCA9685Node()
     board_controller_.set_pwm_freq(pwm_freq);
 
     // Load servo configurations from rosparams
-    configure_servo_("throttle");
-    configure_servo_("steering");
-
+    configure_servo_("left_top_lid");
+    configure_servo_("left_bottom_lid");
+    configure_servo_("right_top_lid");
+    configure_servo_("right_bottom_lid");
+    configure_servo_("look_z"); // right left
+    configure_servo_("look_y"); // up down
+ 
     // initiate subscribers
     abs_sub_ = nh_.subscribe<pca9685_board::Servo>(
         "servo_absolute", 1, &PCA9685Node::servo_absolute_callback_, this);
@@ -62,7 +67,7 @@ const servo_config* PCA9685Node::get_servo_config(std::string name)
  */
 void PCA9685Node::configure_servo_(const std::string name)
 {
-    std::string param_name = "/servos/" + name;
+    std::string param_name = "servos/" + name;
     ROS_ASSERT_MSG(nh_.hasParam(param_name),
         "(%s) param does not exist", param_name.c_str());
     servo_config config;
@@ -116,8 +121,12 @@ void PCA9685Node::servos_drive_callback_(
     const geometry_msgs::TwistConstPtr& msg
 )
 {
-    set_servo_proportional_("steering", msg->angular.z);
-    set_servo_proportional_("throttle", msg->linear.x);
+    set_servo_proportional_("left_top_lid", msg->linear.z);
+    set_servo_proportional_("left_bottom_lid", msg->linear.z);
+    set_servo_proportional_("right_top_lid", msg->linear.z);
+    set_servo_proportional_("right_bottom_lid", msg->linear.z);
+    set_servo_proportional_("look_z", msg->angular.z); // right left
+    set_servo_proportional_("look_y", msg->angular.y); // up down
 }
 
 /**
